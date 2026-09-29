@@ -38,7 +38,8 @@ CJ올리브네트웍스 Software Engineer 지원 포트폴리오
 
 ## 1. Y-FIN: 청년 맞춤 금융상품 추천
 
-> 2026.03 ~ 진행 중 / 5인 팀(백엔드 2인) / PNU 2026 AI 해커톤 최우수상
+> 2026.03 ~ 진행 중 / 5인 팀(백엔드 2인) / PNU 2026 AI 해커톤 최우수상\
+> 기술: Java 21, Spring Boot 4, Spring Security, Spring Batch, JPA, PostgreSQL, Testcontainers, Gemini API\
 > [서비스 백엔드](https://github.com/ApptiveDev/Fin-BE) / [금융 데이터 수집기](https://github.com/ApptiveDev/Fin-API) / [해커톤 저장소](https://github.com/PNU-2026-AI-Hackathon/pnuai-c-07-finfin2)
 
 사용자의 소득, 연령, 가구 조건을 바탕으로 예금과 적금 상품을 맞춤 필터링하고, 거래 조건에 따른 개인별 적합도와 예상 수익을 산출해 주는 서비스입니다. 은행 상품 328건과 정부 정책 상품 63건 등 총 391건의 금융 데이터를 수집하고 정규화했습니다. 서비스 API와 외부 데이터 수집기는 독립된 애플리케이션으로 분리 운영합니다.
@@ -75,6 +76,8 @@ CJ올리브네트웍스 Software Engineer 지원 포트폴리오
 
 ### LLM 정규화 안정화
 
+![Y-FIN LLM 보강 정규화 흐름](https://raw.githubusercontent.com/PNU-2026-AI-Hackathon/pnuai-c-07-finfin2/main/docs/img/llm-normalization.png)
+
 - **실패 격리:** 규칙으로 파싱되지 않는 약관과 우대조건만 Gemini로 보강합니다. 호출이나 검증에 실패하면 규칙 기반 정규화 결과를 그대로 사용하고, 실패 횟수와 시각을 기록해 6시간 동안 같은 항목을 다시 호출하지 않도록 했습니다.
 - 비정형 텍스트로 된 우대조건을 Gemini로 구조화할 때, 일부 요청이 약 60초간 지연된 후 timeout되거나 응답 형식 이상으로 파싱에 실패하는 문제를 호출별 소요 시간과 성공 여부 로깅을 통해 재현했습니다.
 - 로컬에 구축한 금융감독원(FSS) 원본 97건 데이터셋을 대상으로 출력 토큰 상한(Max Tokens)과 Temperature 조합을 반복 실험했습니다. 그 결과, 기준 설정 기준 5분 30초였던 전체 실행 시간을 2분 52초~3분 23초로 약 38~48% 단축했으며, 6회 반복 실행 동안 장시간 timeout이 단 1건도 재발하지 않았습니다.
@@ -85,7 +88,8 @@ CJ올리브네트웍스 Software Engineer 지원 포트폴리오
 
 ## 2. Yacht Online: 실시간 멀티플레이 게임
 
-> 2026.02 ~ 2026.06 / 3인 팀 / Backend, Game Server, Redis, EC2 담당
+> 2026.02 ~ 2026.06 / 3인 팀 / Backend, Game Server, Redis, EC2 담당\
+> 기술: Java, Spring Boot, WebSocket(STOMP), Redis, Docker Compose, AWS EC2, RDS, ALB\
 > [통합 저장소](https://github.com/yuyeol3/yacht-online) / [백엔드 저장소](https://github.com/yuyeol3/yacht-backend) / [시스템 구성도](https://github.com/yuyeol3/yacht-online/blob/main/docs/images/diagram.png)
 
 ![Yacht Online 시스템 구성도](https://raw.githubusercontent.com/yuyeol3/yacht-online/main/docs/images/diagram.png)
@@ -119,7 +123,8 @@ CJ올리브네트웍스 Software Engineer 지원 포트폴리오
 
 ## 3. Kyverno Governance Platform
 
-> 부산대학교 졸업과제 / 3인 / Backend 담당 (인증과 인가, 세션, 정책 예외 API와 상태 전이, Kyverno 어댑터)
+> 부산대학교 졸업과제 / 3인 / Backend 담당 (인증과 인가, 세션, 정책 예외 API와 상태 전이, Kyverno 어댑터)\
+> 기술: TypeScript, NestJS 11, Prisma 6, PostgreSQL, Kubernetes Client, Kyverno\
 > [저장소](https://github.com/pnucse-capstone2026/capstone-2026-team-30) / [시연 영상](https://www.youtube.com/watch?v=Gngvrf_XGBg)
 
 ![Kyverno Governance Platform 관리자 화면](https://raw.githubusercontent.com/pnucse-capstone2026/capstone-2026-team-30/main/docs/images/admin-dashboard.jpg)
@@ -152,7 +157,8 @@ Kubernetes 클러스터의 정책 위반 사항을 모니터링하고, 한시적
 
 ## 4. 일정관리 AI 에이전트: 카카오테크캠퍼스 4기
 
-> 2026.06 ~ 2026.08 / 에이전틱 AI 과정 / 개인 구현 / 6주 과제 PR 전부 병합
+> 2026.06 ~ 2026.08 / 에이전틱 AI 과정 / 개인 구현 / 6주 과제 PR 전부 병합\
+> 기술: Python 3.11, LangChain, OpenAI API, ChromaDB, SQLite, MCP, pytest\
 > [저장소(choiyuyeol/final)](https://github.com/kakaotechcampus-4/pusan-clone/tree/choiyuyeol/final) / [4주차 PR #125](https://github.com/kakaotechcampus-4/pusan-clone/pull/125) / [5주차 PR #158](https://github.com/kakaotechcampus-4/pusan-clone/pull/158) / [6주차 PR #195](https://github.com/kakaotechcampus-4/pusan-clone/pull/195)
 
 자연어 대화로 일정을 관리하는 에이전트를 6주에 걸쳐 단계적으로 구현했습니다. 매주 요구사항이 늘어나, LLM이 도구를 고르는 구조에서 시작해 여러 저장소 라우팅, MCP 연동, 하위 에이전트 위임까지 확장했습니다.
