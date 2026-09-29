@@ -23,7 +23,7 @@ CJ올리브네트웍스 Software Engineer 지원 포트폴리오
 | Java / Spring Boot | OAuth2/JWT 인증, 추천 로직 리팩터링, Spring Batch 수집기, WebSocket 게임 서버 |
 | 클라우드 및 데이터 | EC2 배포, RDS 연동, PostgreSQL, Redis, 잠금과 동시성 제어 |
 | LLM 및 생성형 AI 연동 | Y-FIN의 Gemini 정규화 파이프라인, 일정관리 에이전트의 RAG와 MCP 연동 |
-| AI 협업 역량 | AI 생성 코드의 취약 테스트 선별 및 폐기, 평가 하네스 기반 검증 범위 및 토큰 비용 조정 |
+| AI 협업 역량 | [일정관리 AI 에이전트](#4-일정관리-ai-에이전트-카카오테크캠퍼스-4기)의 평가 하네스 기반 AI 개발 루프, AI 생성 테스트 선별 및 폐기, 검증 비용 조정 |
 
 ## 프로젝트 요약
 
@@ -32,13 +32,7 @@ CJ올리브네트웍스 Software Engineer 지원 포트폴리오
 | [Y-FIN](#1-y-fin-청년-맞춤-금융상품-추천) | Backend, Data Pipeline | 인증, 금융 데이터 수집, LLM 정규화, 추천 로직 리팩터링 | 금융상품 391건 정규화 및 FSS 97건 반복 실험 |
 | [Yacht Online](#2-yacht-online-실시간-멀티플레이-게임) | Backend, Game Server, EC2 | API와 Game 서버 분리, Redis 기반 서버 선택, WebSocket 상태 동기화 | API, Game, Redis 통합 로컬 검증 및 Game 서버 2대 AWS EC2 분산 배포 |
 | [Kyverno Governance Platform](#3-kyverno-governance-platform) | Backend (인증, 세션, 정책 예외) | 인증과 RBAC, 세션 동시성, 예외 조정 작업의 중복 처리 방지 | 로그아웃과 동시 refresh 경합 통합 테스트 |
-
-## AI 협업 방식
-
-- AI가 작성한 구현과 테스트라도 비즈니스 의도를 정확히 검증하지 못하면 채택하지 않습니다. 실제로 자연어 프롬프트 응답을 단순 문자열 포함 여부로 검증하던 테스트는 사소한 문구 변경에도 쉽게 깨지는 취약점이 있어 과감히 삭제했습니다. AI가 제안한 응답 데코레이터도 가독성을 떨어뜨려 폐기하고 기존 헬퍼로 되돌렸습니다.
-- 비결정적으로 동작하는 에이전트를 검증하기 위해 평가 하네스(Evaluation Harness)를 직접 구축했습니다. 운영 매니저에게서 "테스트 하네스를 구현한 수강생은 유일하다"는 평가를 받았습니다.
-- 이후 하네스가 input token을 과도하게 사용한다는 지적을 받아 실행 반복 횟수를 줄이고, LLM-as-a-Judge 호출을 제거하여 검증 품질과 비용 효율 간의 균형을 맞췄습니다.
-- 근거: [카카오테크캠퍼스 PR #158: AI 활용 내역과 리뷰 기록](https://github.com/kakaotechcampus-4/pusan-clone/pull/158) / [운영 매니저 코멘트](https://github.com/kakaotechcampus-4/pusan-clone/pull/158#issuecomment-5161731817)
+| [일정관리 AI 에이전트](#4-일정관리-ai-에이전트-카카오테크캠퍼스-4기) | 개인 구현 (Python) | 도구 라우팅, 듀얼 RAG, MCP 연동, 하위 에이전트 위임 | 도구 호출 trace 기반 평가 하네스와 held-out 케이스 |
 
 ---
 
@@ -156,6 +150,39 @@ Kubernetes 클러스터의 정책 위반 사항을 모니터링하고, 한시적
 
 ---
 
+## 4. 일정관리 AI 에이전트: 카카오테크캠퍼스 4기
+
+> 2026.06 ~ 2026.08 / 에이전틱 AI 과정 / 개인 구현 / 6주 과제 PR 전부 병합
+> [저장소(choiyuyeol/final)](https://github.com/kakaotechcampus-4/pusan-clone/tree/choiyuyeol/final) / [4주차 PR #125](https://github.com/kakaotechcampus-4/pusan-clone/pull/125) / [5주차 PR #158](https://github.com/kakaotechcampus-4/pusan-clone/pull/158) / [6주차 PR #195](https://github.com/kakaotechcampus-4/pusan-clone/pull/195)
+
+자연어 대화로 일정을 관리하는 에이전트를 6주에 걸쳐 단계적으로 구현했습니다. 매주 요구사항이 늘어나, LLM이 도구를 고르는 구조에서 시작해 여러 저장소 라우팅, MCP 연동, 하위 에이전트 위임까지 확장했습니다.
+
+### 에이전트 구조
+
+- 질문 유형에 따라 에이전트가 ChromaDB(참고 자료 검색)와 SQLite(구조화된 일정 조회) 도구를 스스로 선택하도록 라우팅 규칙을 구성했습니다.
+- MCP 서버를 연동해 멤버와 질의 기반으로 과거 대화를 검색하는 도구를 추가했습니다.
+- supervisor가 하위 에이전트에게 작업을 위임하고, 약속 시간과 결정 이유를 함께 설명하도록 구성했습니다.
+- 주차가 늘며 프롬프트 지시가 서로 충돌하자, 예시를 더 넣는 대신 도구에 종속된 지시는 도구 설명으로 옮기고 나머지는 필요한 것만 포함되도록 분리했습니다.
+
+### 평가 하네스
+
+- 에이전트 실행 trace에서 도구 호출 여부, 순서, 인자를 케이스 기대값과 대조해 채점했습니다. 앞 도구의 결과가 다음 도구의 인자로 제대로 전달됐는지도 검사했습니다.
+- 같은 케이스를 여러 번 실행해 통과율로 판정했습니다. 규칙마다 프롬프트 예시에 넣지 않은 held-out 케이스를 두어, 프롬프트가 평가 케이스에만 맞춰지지 않도록 했습니다.
+- 최종 답변은 검토 기준 문서에 따라 PASS, FAIL, REVIEW로 판정했습니다. 근거 없는 사실을 지어내거나 빈 검색 결과를 기록 부재로 과장하면 FAIL입니다.
+- 실행 기록에서 조회 결과를 다음 도구로 넘기지 않는 문제, 빈 결과를 "가능한 시간 없음"으로 잘못 해석하는 문제를 찾아 도구 설명에 데이터 전달 규칙을 명시했습니다.
+- 운영 매니저에게서 "테스트 하네스를 구현한 수강생은 유일하다"는 평가를 받았습니다.
+- 근거: [trace 채점 함수](https://github.com/kakaotechcampus-4/pusan-clone/blob/2d265874262dae9f3b6e2bd68ed398c83b3420fe/tests/evals/predicates.py) / [답변 검토 기준](https://github.com/kakaotechcampus-4/pusan-clone/blob/2d265874262dae9f3b6e2bd68ed398c83b3420fe/tests/evals/ANSWER_REVIEW.md) / [운영 매니저 코멘트](https://github.com/kakaotechcampus-4/pusan-clone/pull/158#issuecomment-5161731817)
+
+### AI와 협업한 방식
+
+- Codex와 Claude가 평가 하네스를 실행하며 프롬프트를 반복 개선하도록 개발 루프를 구성했습니다. 사람이 결과를 눈으로 확인하는 대신 하네스 통과 여부가 개선의 기준이 됐습니다.
+- 이 루프에서 input token이 과도하게 쓰인다는 지적을 받았습니다. 모든 케이스를 5회씩 돌려 80% 이상으로 판정하던 방식을 대표 케이스만 3회 중 2회 통과로 판정하고 나머지는 1회만 돌리도록 바꿨습니다. GPT-4.1 mini API로 호출하던 LLM-as-a-Judge도 폐기하고, 저장된 실행 결과를 Codex와 Claude CLI가 같은 검토 기준으로 판정하게 했습니다.
+- AI가 만든 결과물도 의도를 검증하지 못하면 채택하지 않았습니다. AI가 작성한 테스트 중 자연어 프롬프트를 단순 문자열 포함 여부로 확인하던 테스트는 사소한 문구 변경에도 깨져 삭제했습니다.
+- Codex가 만든 변환 함수에 입력 검증 책임까지 몰려 있는 것을 발견하고, 검증은 호출부가 맡도록 다시 지시해 책임을 분리했습니다.
+- 근거: [3주차 PR #92](https://github.com/kakaotechcampus-4/pusan-clone/pull/92) / [5주차 PR #158: AI 활용 내역과 리뷰 기록](https://github.com/kakaotechcampus-4/pusan-clone/pull/158) / [LLM Judge 하네스](https://github.com/kakaotechcampus-4/pusan-clone/blob/2d265874262dae9f3b6e2bd68ed398c83b3420fe/tests/evals/llm_judge.py)
+
+---
+
 ## 기술 경험
 
 - 주로 사용: Java, Spring Boot, Spring Security, JPA, PostgreSQL
@@ -170,6 +197,5 @@ Kubernetes 클러스터의 정책 위반 사항을 모니터링하고, 한시적
 | --- | --- | --- |
 | [Plato Calendar](https://github.com/yuyeol3/plato-calendar3) | 부산대학교 LMS 일정을 자동으로 수집하고 동기화하는 Chrome Extension | production build 확인 |
 | [YouTube Shortener](https://github.com/yuyeol3/youtube-shortener-backend) | 시청 Heatmap 기반 인기 구간 탐색 및 자동 스킵 웹 서비스 | Spring Boot + React 풀스택 |
-| [Kanana Schedule Agent](https://github.com/kakaotechcampus-4/pusan-clone/tree/choiyuyeol/final) | 도구 선택부터 RAG, MCP 연동 및 하위 에이전트 위임까지 6주간 구현한 지능형 에이전트 | Python + RAG + MCP |
 | [개발 블로그](https://yuyeol3.github.io/) | Next.js App Router와 GitHub Actions 기반 정적 기술 블로그 | GitHub Pages 운영 |
 | [Codex 개발 도구](https://github.com/yuyeol3/maintain-code-map) | 코드맵, TDD, 변경 설명 등 반복되는 개발 생산성 작업을 구조화한 도구 | [관련 저장소](https://github.com/yuyeol3?tab=repositories) |
