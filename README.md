@@ -29,13 +29,12 @@ CJ올리브네트웍스 Software Engineer 지원 포트폴리오
 
 | 프로젝트 | 역할 | 핵심 기여 | 대표 검증 |
 | --- | --- | --- | --- |
-| [Y-FIN](#1-y-fin-청년-맞춤-금융상품-추천) | Backend, Data Pipeline | 인증, 금융 데이터 수집, LLM 정규화, 추천 로직 리팩터링 | 금융상품 391건 정규화 및 FSS 97건 반복 실험 |
+| [Y-FIN](#1-y-fin-청년-맞춤-금융상품-추천) | Backend, Data Pipeline | 인증, 금융 데이터 수집, LLM 정규화, 추천 로직 리팩터링 | FSS 97건 반복 실험으로 실행 시간 38\~48% 단축 |
 | [Yacht Online](#2-yacht-online-실시간-멀티플레이-게임) | Backend, Game Server, EC2 | API와 Game 서버 분리, Redis 기반 서버 선택, WebSocket 상태 동기화 | API, Game, Redis 통합 로컬 검증 및 Game 서버 2대 AWS EC2 분산 배포 |
 | [Kyverno Governance Platform](#3-kyverno-governance-platform) | Backend (인증, 세션, 정책 예외) | 인증과 RBAC, 정책 예외 상태 전이와 조정 루프, 동시성 제어 | 로그아웃과 동시 refresh 경합 통합 테스트 |
 | [일정관리 AI 에이전트](#4-일정관리-ai-에이전트-카카오테크캠퍼스-4기) | 개인 구현 (Python) | 도구 라우팅, 듀얼 RAG, MCP 연동, 하위 에이전트 위임 | 도구 호출 trace 기반 평가 하네스와 held-out 케이스 |
 
 ---
-
 
 ## 1. Y-FIN: 청년 맞춤 금융상품 추천
 
@@ -44,7 +43,7 @@ CJ올리브네트웍스 Software Engineer 지원 포트폴리오
 > 기술: Java 21, Spring Boot 4, Spring Security, Spring Batch, JPA, PostgreSQL, Testcontainers, Gemini API\
 > [서비스 백엔드](https://github.com/ApptiveDev/Fin-BE) / [금융 데이터 수집기](https://github.com/ApptiveDev/Fin-API) / [해커톤 저장소](https://github.com/PNU-2026-AI-Hackathon/pnuai-c-07-finfin2)
 
-소득, 연령, 가구 조건으로 예금과 적금 391건(은행 328건, 정부 정책 63건)을 필터링하고 개인별 적합도와 예상 수익을 계산하는 서비스입니다.
+금융감독원과 온통청년의 서로 다른 상품 데이터를 하나의 스키마로 정규화하고, 소득, 연령, 가구 조건으로 가입 가능한 상품을 걸러 예상 수익을 계산하는 서비스입니다.
 
 **1. 동시 Refresh 요청의 500 오류**\
 같은 Refresh Token으로 요청이 동시에 들어오면 두 요청이 모두 토큰을 유효하다고 읽고 회전을 시도해 500 오류가 났습니다. 행 삭제를 "활성 상태인 행만 비활성화하는 조건부 UPDATE"로 바꾸고 영향 행 수를 확인해, 먼저 온 요청만 통과하고 나머지는 401로 처리되게 했습니다. [PR #9](https://github.com/ApptiveDev/Fin-BE/pull/9)
