@@ -181,6 +181,7 @@ Codex와 Claude가 평가 하네스를 실행하며 프롬프트를 반복 개�
 | 프로젝트 | 내용 | 비고 |
 | --- | --- | --- |
 | [Plato Calendar](https://github.com/yuyeol3/plato-calendar3) | 부산대학교 LMS 일정을 자동으로 수집하고 동기화하는 Chrome Extension | production build 확인 |
+| 인편 전송 웹앱 (비공개 저장소) | 불편한 공군 인터넷 편지 페이지 대신, 게시판에 쓴 편지를 예약 작업이 공군 페이지로 자동 전송하는 웹앱 (2022.08\~09) | Flask, SQLite, PythonAnywhere 배포 |
 | [YouTube Shortener](https://github.com/yuyeol3/youtube-shortener-backend) | 시청 Heatmap 기반 인기 구간 탐색 및 자동 스킵 웹 서비스 | Spring Boot + React 풀스택 |
 | [개발 블로그](https://yuyeol3.github.io/) | Next.js App Router와 GitHub Actions 기반 정적 기술 블로그 | GitHub Pages 운영 |
 | [Codex 개발 도구](https://github.com/yuyeol3/maintain-code-map) | 코드맵, TDD, 변경 설명 등 반복되는 개발 생산성 작업을 구조화한 도구 | [관련 저장소](https://github.com/yuyeol3?tab=repositories) |
