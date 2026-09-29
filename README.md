@@ -31,7 +31,7 @@ CJ올리브네트웍스 Software Engineer 지원 포트폴리오
 | --- | --- | --- | --- |
 | [Y-FIN](#1-y-fin-청년-맞춤-금융상품-추천) | Backend, Data Pipeline | 인증, 금융 데이터 수집, LLM 정규화, 추천 로직 리팩터링 | 금융상품 391건 정규화 및 FSS 97건 반복 실험 |
 | [Yacht Online](#2-yacht-online-실시간-멀티플레이-게임) | Backend, Game Server, EC2 | API와 Game 서버 분리, Redis 기반 서버 선택, WebSocket 상태 동기화 | API, Game, Redis 통합 로컬 검증 및 Game 서버 2대 AWS EC2 분산 배포 |
-| [Kyverno Governance Platform](#3-kyverno-governance-platform) | Backend (인증, 세션, 정책 예외) | 인증과 RBAC, 세션 동시성, 예외 조정 작업의 중복 처리 방지 | 로그아웃과 동시 refresh 경합 통합 테스트 |
+| [Kyverno Governance Platform](#3-kyverno-governance-platform) | Backend (인증, 세션, 정책 예외) | 인증과 RBAC, 정책 예외 상태 전이와 조정 루프, 동시성 제어 | 로그아웃과 동시 refresh 경합 통합 테스트 |
 | [일정관리 AI 에이전트](#4-일정관리-ai-에이전트-카카오테크캠퍼스-4기) | 개인 구현 (Python) | 도구 라우팅, 듀얼 RAG, MCP 연동, 하위 에이전트 위임 | 도구 호출 trace 기반 평가 하네스와 held-out 케이스 |
 
 ---
@@ -138,13 +138,15 @@ Kubernetes 클러스터의 정책 위반 사항을 모니터링하고, 한시적
 - 역할 기반 접근 제어(`ADMIN`, `APPROVER`, `REQUESTER`, `VIEWER` RBAC)를 설계하고 사용자 권한에 따른 클러스터 접근 범위를 제한했습니다.
 - 근거: [인증 구현](https://github.com/pnucse-capstone2026/capstone-2026-team-30/commit/3878df473a4936d06b0aec4c1ae7226f05e1347c) / [RBAC 구현](https://github.com/pnucse-capstone2026/capstone-2026-team-30/commit/cbfe42f1e46fc222f1c2ed7e357fe879347e77dd) / [세션 동시성 개선](https://github.com/pnucse-capstone2026/capstone-2026-team-30/commit/f355ff132fdfc03c49dbc9eb3764fedb3f44eda3)
 
-### 정책 예외 상태 관리
+### 정책 예외 상태 전이와 조정 루프
 
-- 정책 위반 및 예외 처리 비즈니스 API를 구현하고, 감사 로그 기록과 Kubernetes `PolicyException` CRD 연동을 구현했습니다.
-- 플랫폼의 승인 결정과 원격 클러스터의 실제 적용 결과를 독립된 상태로 분리하여 관리했습니다.
-- **조정 작업 중복 방지:** 예외를 클러스터에 반영하는 조정(Reconciliation) 작업이 같은 예외를 동시에 처리하지 않도록 claim(lease)으로 대상을 선점하게 했습니다. 취소와 적용이 겹치는 경우는 Serializable 트랜잭션과 현재 상태를 조건으로 한 갱신으로 처리했습니다.
-- 만료된 예외를 먼저 처리하도록 조정 순서를 바꿨습니다. 예외 기간 만료 또는 취소 시 원격 CR을 회수하며, 실제 클러스터 상태가 DB와 불일치할 경우 정상 상태로 자동 수렴하도록 구성했습니다.
-- 근거: [예외 조정 개선](https://github.com/pnucse-capstone2026/capstone-2026-team-30/commit/95dd69ed2138529689e6dd0ac107d4adcea5582d) / [동시성 개선](https://github.com/pnucse-capstone2026/capstone-2026-team-30/commit/6018d01b3da5c5d488618c29a3db21b491925c9b)
+- 정책 예외 요청과 승인, 반려 API를 구현하고, 예외를 Kubernetes `PolicyException` manifest로 변환해 클러스터에 적용하는 Kyverno 어댑터를 만들었습니다.
+- **상태 전이 설계:** 승인 결정과 클러스터 반영 결과가 어긋날 수 있어서, 반영 중인 중간 상태(`APPLYING`, `CANCELLING`, `EXPIRING`)를 따로 두었습니다. 승인되면 `PENDING`에서 `APPLYING`으로 바뀌고, CR 적용이 확인되면 `APPROVED`가 됩니다. 취소와 만료도 CR 회수를 확인한 뒤에야 `CANCELLED`, `EXPIRED`로 끝납니다.
+- 모든 전이는 Serializable 트랜잭션 안에서 "현재 상태가 기대한 값일 때만" 갱신하고, 전이 전후 상태를 감사 로그에 남겼습니다. 조건이 맞지 않으면 409로 거절합니다. 팀 성능 평가의 "20건 동시 승인 중 1건만 승인" 결과가 이 조건부 갱신에서 나옵니다.
+- **조정 루프:** 주기적으로 도는 reconciler가 중간 상태에 머문 예외를 다시 처리합니다. 적용 중인 예외는 CR을 다시 적용하고, 승인된 예외는 CR이 남아 있는지 확인하고, 만료 시각이 지난 예외는 CR을 회수합니다. 그래서 적용 도중 실패하거나 클러스터 상태가 DB와 어긋나도 다시 수렴합니다.
+- 이 코드는 본인 브랜치에서 구현한 뒤 팀원의 통합 커밋으로 main에 반영됐습니다. 실패 재시도용 backoff는 통합 과정에서 팀원이 추가했습니다.
+- **조정 작업 중복 방지:** 통합 이후 같은 예외를 조정 작업 여러 개가 동시에 처리하지 않도록 claim(lease)으로 대상을 선점하게 했습니다. 취소와 적용이 겹치는 경우도 같은 조건부 갱신으로 처리했고, 만료된 예외를 먼저 처리하도록 조정 순서를 바꿨습니다.
+- 근거: [상태 전이 서비스](https://github.com/pnucse-capstone2026/capstone-2026-team-30/blob/b2aec85fc78d4a9a8d51ceb1632b66c02761456b/apps/backend/src/exception-lifecycle/exception-lifecycle.service.ts) / [reconciler](https://github.com/pnucse-capstone2026/capstone-2026-team-30/blob/b2aec85fc78d4a9a8d51ceb1632b66c02761456b/apps/backend/src/exception-lifecycle/exception-reconciler.service.ts) / [Kyverno 어댑터](https://github.com/pnucse-capstone2026/capstone-2026-team-30/blob/b2aec85fc78d4a9a8d51ceb1632b66c02761456b/apps/backend/src/kubernetes/kyverno.adapter.ts) / [예외 조정 개선](https://github.com/pnucse-capstone2026/capstone-2026-team-30/commit/95dd69ed2138529689e6dd0ac107d4adcea5582d) / [동시성 개선](https://github.com/pnucse-capstone2026/capstone-2026-team-30/commit/6018d01b3da5c5d488618c29a3db21b491925c9b)
 
 ### 테스트 및 성능 검증
 
