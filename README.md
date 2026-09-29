@@ -1,7 +1,5 @@
 # 최유렬 | Software Engineer
 
-> 비즈니스 규칙을 코드로 명확하게 만들고, 실패해도 복구되는 백엔드를 개발합니다.
-
 [![GitHub](https://img.shields.io/badge/GitHub-yuyeol3-181717?logo=github)](https://github.com/yuyeol3)
 [![Java](https://img.shields.io/badge/Java%20%7C%20Spring%20Boot-Backend-6DB33F?logo=springboot&logoColor=white)](#기술-스택)
 [![TypeScript](https://img.shields.io/badge/TypeScript%20%7C%20NestJS-Full--stack-3178C6?logo=typescript&logoColor=white)](#기술-스택)
@@ -10,13 +8,7 @@ CJ올리브네트웍스 Software Engineer 지원 포트폴리오
 
 ---
 
-## Profile
-
-Java·Spring Boot를 중심으로 인증, 데이터 처리, 동시성 제어가 필요한 웹 서비스를 개발해 왔습니다. 요구사항을 기능 목록으로만 옮기지 않고, 실패 조건과 상태 전이, 검증 방법까지 코드와 테스트에 담는 것을 중요하게 생각합니다.
-
-AI는 빠르게 탐색하고 초안을 만드는 도구로 적극 활용하되, 금융·세무·보안처럼 결과의 일관성이 중요한 영역에서는 **AI의 역할과 결정론적 코드의 경계**를 명확히 나눕니다.
-
-### 직무 연관 역량
+## 직무 연관 역량
 
 | CJ Software Engineer 업무·우대 역량 | 프로젝트에서 확인할 수 있는 경험 |
 | --- | --- |
@@ -80,10 +72,6 @@ IT 프리랜서의 카드 거래가 필요경비에 해당하는지 법적 근�
 - [실험 저장소](https://github.com/yuyeol3/merchant-category-classifier)
 - [규칙 대비 하이브리드 평가 보고서](https://github.com/yuyeol3/merchant-category-classifier/blob/main/REPORT.md)
 
-### 룰카드에서 배운 점
-
-정확도가 중요한 시스템에서 AI를 많이 사용하는 것보다, **AI가 틀렸을 때 어디까지 영향을 미치는지 제한하는 설계**가 더 중요했습니다. 규칙이 없거나 정보가 부족할 때는 그럴듯한 오답 대신 추가 질문을 반환하도록 안전한 실패 경로를 만들었습니다.
-
 ---
 
 ## 2. Kyverno Governance Platform
@@ -115,10 +103,6 @@ Kubernetes 정책 위반을 조회하고, 한시적 예외의 요청·승인·�
 
 측정 수치와 환경, 현재 한계는 [프로젝트 README의 테스트·성능 평가](https://github.com/pnucse-capstone2026/capstone-2026-team-30#45-테스트-및-성능-평가)에 공개했습니다.
 
-### Kyverno Governance Platform에서 배운 점
-
-DB 트랜잭션만으로 외부 시스템의 성공까지 보장할 수는 없습니다. 그래서 “승인됨”과 “적용 중”, “적용 실패”를 분리하고, 감사 가능한 이력과 재시도 가능한 작업으로 모델링했습니다. 운영에서 중요한 것은 한 번에 성공하는 코드뿐 아니라 **실패를 감지하고 수렴하는 구조**임을 배웠습니다.
-
 ---
 
 ## 3. Y-FIN — 청년 맞춤 금융상품 추천
@@ -143,30 +127,6 @@ DB 트랜잭션만으로 외부 시스템의 성공까지 보장할 수는 없�
 - 수집원에서 사라진 상품을 비활성화하는 동기화 단계와 Testcontainers 기반 PostgreSQL 통합 테스트를 추가했습니다.
 - 근거: [상품 동기화 PR #1](https://github.com/ApptiveDev/Fin-API/pull/1), [분류 개선 PR #3](https://github.com/ApptiveDev/Fin-API/pull/3)
 
-### Y-FIN에서 배운 점
-
-인증이나 금융 추천처럼 경계값과 시간의 의미가 중요한 기능은 정상 경로만 테스트해서는 부족했습니다. 토큰 동시 갱신, 약관 효력 시점, 타임존, 상품 옵션별 가입 한도를 도메인 규칙으로 분리하고 경계 사례를 테스트했습니다.
-
----
-
-## Engineering Principles
-
-### 1. 실패 조건부터 모델링합니다
-
-외부 API 오류, 동시 요청, 부분 성공을 정상 흐름의 예외가 아니라 설계 입력으로 봅니다. 실패를 숨기지 않고 상태로 드러내며, 재시도해도 같은 결과로 수렴하도록 만듭니다.
-
-### 2. 검증할 수 없는 자동화는 배포하지 않습니다
-
-단위 테스트뿐 아니라 실제 PostgreSQL 통합 테스트, 경쟁 상태 재현, API 계약 테스트, 성능 측정을 위험에 맞게 선택합니다. AI·휴리스틱에는 한계와 실패 사례를 함께 기록합니다.
-
-### 3. AI와 코드의 책임을 구분합니다
-
-AI는 탐색, 분류 후보, 문서화와 리뷰에 활용합니다. 인증·금액·세무 판정처럼 재현성이 필요한 결정은 명시적 규칙과 코드로 실행하고, AI 출력은 스키마와 근거 검증을 통과한 뒤 사용합니다.
-
-### 4. 팀의 대기 시간을 줄입니다
-
-실행 가능한 목 서버, 자동 리뷰 요약, PR 알림, 배포 파이프라인처럼 동료가 기다리거나 반복하는 작업을 찾아 작게 자동화합니다.
-
 ---
 
 ## 기술 스택
@@ -187,5 +147,3 @@ AI는 탐색, 분류 후보, 문서화와 리뷰에 활용합니다. 인증·금
 - [GitHub 전체 프로젝트](https://github.com/yuyeol3?tab=repositories)
 - [개발 블로그](https://yuyeol3.github.io/)
 - [코드 구조를 빠르게 파악하기 위한 Code Map 도구](https://github.com/yuyeol3/maintain-code-map)
-
-**요구사항을 이해하고, 실패를 설계하며, 실행 결과로 증명하는 Software Engineer가 되겠습니다.**
