@@ -17,7 +17,7 @@ CJ올리브네트웍스 Software Engineer 지원 포트폴리오
 | S/W 설계 및 개발 | 금융상품 추천 / 실시간 게임 서버 / Kubernetes 정책 관리 시스템의 데이터 모델 및 API 구현 |
 | WEB 서비스 개발 및 운영 | 인증 및 인가 / 트랜잭션 / 외부 API 연동 / 실시간 상태 동기화 / 배포 |
 | Java / Spring Boot | OAuth2/JWT 인증 / 개인화 검색 / Spring Batch 수집기 / WebSocket 게임 서버 |
-| AWS / DBMS | EC2 / RDS / ALB / EKS / PostgreSQL / MySQL / Flyway / Prisma / 잠금과 동시성 제어 |
+| 클라우드 및 데이터 | EC2 배포 / RDS 연동 / PostgreSQL / Redis / 잠금과 동시성 제어 |
 | LLM 및 생성형 AI 연동 | Y-FIN의 Gemini 정규화 파이프라인 및 일정관리 에이전트의 RAG와 MCP 연동 |
 | AI 협업 역량 | 생성 코드의 취약한 테스트를 폐기하고 평가 하네스의 검증 범위와 토큰 비용을 조정한 기록 |
 
@@ -144,16 +144,13 @@ Kubernetes 정책 위반을 조회합니다. 한시적 예외가 요청부터 �
 
 ---
 
-## 기술 스택
+## 기술 경험
 
-| 구분 | 경험 |
-| --- | --- |
-| Backend | Java / Spring Boot / Spring Security / Spring Batch / NestJS / REST API / WebSocket |
-| Data | PostgreSQL / MySQL / Redis / JPA / Prisma / Flyway / 트랜잭션과 잠금 |
-| Test | JUnit / Jest / Supertest / Testcontainers / 계약 테스트 / 통합 테스트 / 동시성 테스트 |
-| Infra | AWS EC2 / RDS / ALB / EKS / Docker Compose / GitHub Actions / Kubernetes / Kyverno |
-| Frontend | TypeScript / React / Next.js / Vite |
-| AI / Data | 구조화 출력 검증 / RAG / scikit-learn / char n-gram 분류 |
+- 주로 사용: Java / Spring Boot / Spring Security / JPA / PostgreSQL
+- 프로젝트에서 사용: Spring Batch / Redis / Docker / AWS EC2 / RDS
+- 특정 프로젝트에서 사용: NestJS / Kubernetes / Kyverno / RAG / MCP
+
+기술별 사용 범위는 각 프로젝트 설명에 따로 적었습니다.
 
 ## 기타 프로젝트
 
