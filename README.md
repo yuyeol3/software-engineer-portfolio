@@ -8,6 +8,8 @@
 
 CJ올리브네트웍스 Software Engineer 지원 포트폴리오
 
+동시성, 상태 전이, 외부 연동 실패처럼 재현하기 어려운 문제를 테스트와 측정으로 확인하는 백엔드 개발자입니다. Java·Spring 기반 서비스와 데이터 파이프라인을 주로 구현했고, LLM은 결과를 그대로 신뢰하기보다 출력 검증·실패 제어·평가 기준을 함께 설계해 사용합니다.
+
 ## 직무 연관 경험
 
 | 공고의 업무·우대사항 | 관련 경험 |
@@ -16,24 +18,31 @@ CJ올리브네트웍스 Software Engineer 지원 포트폴리오
 | WEB 서비스 개발 및 운영 | 인증·인가, 트랜잭션, 외부 API 연동, 배포 및 실패 복구 흐름 구현 |
 | Java·Spring Boot | 룰 엔진, OAuth2/JWT 인증, 약관 버전 관리, 개인화 검색, Spring Batch 수집기 |
 | AWS·DBMS | EC2·ECR·RDS·EKS, PostgreSQL·MySQL, Flyway·Prisma, 잠금과 동시성 제어 |
-| AI 활용 개발 | AI와 결정론적 코드의 책임 분리, 상호명 분류 실험, 코드 품질·리뷰 자동화 |
+| LLM·생성형 AI 연동 | Y-FIN의 Gemini 정규화 파이프라인, 룰카드의 AI·결정론적 코드 책임 분리 |
+| AI 협업 역량 | 생성 코드의 취약한 테스트를 폐기하고 평가 하네스의 품질·토큰 비용을 조정한 기록 |
 
 ## 프로젝트 요약
 
-| 프로젝트 | 역할 | 기술 | 핵심 기여 |
+| 프로젝트 | 역할 | 핵심 기여 | 대표 검증 |
 | --- | --- | --- | --- |
-| [Y-FIN](#1-y-fin--청년-맞춤-금융상품-추천) | Backend / Data Pipeline | Java, Spring Boot, Spring Batch, PostgreSQL | 인증부터 개인화 추천, 외부 금융 데이터 수집까지 백엔드 전반 구현 |
-| [룰카드](#2-룰카드--결정론적-필요경비-판정) | Backend | Java 21, Spring Boot, PostgreSQL, AWS | 규칙 엔진·영속화·API 계약·협업 및 배포 자동화 구현 |
-| [Kyverno Governance Platform](#3-kyverno-governance-platform) | Backend | NestJS, Prisma, Kubernetes, Kyverno | 인증·RBAC와 정책 예외의 승인·적용·재시도·만료 흐름 구현 |
+| [Y-FIN](#1-y-fin--청년-맞춤-금융상품-추천) | Backend / Data Pipeline | 인증·개인화 추천·금융 데이터 수집 및 LLM 정규화 | 금융상품 391건 정규화, FSS 97건 반복 실험 |
+| [룰카드](#2-룰카드--결정론적-필요경비-판정) | Backend | 규칙 엔진·영속화·API 계약·협업 및 배포 자동화 | 백엔드 단위 테스트 80개 통과 |
+| [Kyverno Governance Platform](#3-kyverno-governance-platform) | Backend | 인증·RBAC와 정책 예외의 승인·적용·재시도·만료 흐름 | 77개 스위트·617개 테스트 통과 |
+
+## AI 협업 방식
+
+- AI가 만든 구현과 테스트도 의도를 검증하지 못하면 사용하지 않습니다. 자연어 프롬프트를 단순 문자열 포함 여부로 확인하던 테스트는 작은 문구 수정에도 깨져 삭제했습니다.
+- 비결정적 에이전트 동작을 확인하려고 평가 하네스를 만들었고, 과도한 토큰 사용이 확인되자 반복 횟수를 줄이고 LLM-as-a-Judge 호출을 제거해 검증 품질과 비용을 다시 조정했습니다.
+- 근거: [카카오테크캠퍼스 PR #158 — AI 활용 내역·리뷰·수정 기록](https://github.com/kakaotechcampus-4/pusan-clone/pull/158)
 
 ---
 
 ## 1. Y-FIN — 청년 맞춤 금융상품 추천
 
-> APPTIVE 팀 프로젝트
-> [서비스 백엔드](https://github.com/ApptiveDev/Fin-BE) · [금융 데이터 수집기](https://github.com/ApptiveDev/Fin-API)
+> 2026.03 ~ 진행 중 · 5인 팀(백엔드 2인) · PNU 2026 AI 해커톤 최우수상
+> [서비스 백엔드](https://github.com/ApptiveDev/Fin-BE) · [금융 데이터 수집기](https://github.com/ApptiveDev/Fin-API) · [해커톤 저장소](https://github.com/PNU-2026-AI-Hackathon/pnuai-c-07-finfin2)
 
-사용자의 소득·나이·가구·거래 조건을 바탕으로 예·적금 상품을 필터링하고 적합도와 예상 수익을 제공하는 서비스입니다. 서비스 API와 외부 데이터 수집기를 별도 애플리케이션으로 운영합니다.
+사용자의 소득·나이·가구·거래 조건을 바탕으로 예·적금 상품을 필터링하고 적합도와 예상 수익을 제공하는 서비스입니다. 은행상품 328건과 정부 정책상품 63건, 총 391건을 정규화했으며 서비스 API와 외부 데이터 수집기를 별도 애플리케이션으로 운영합니다.
 
 ### 인증과 사용자 상태
 
@@ -59,6 +68,13 @@ CJ올리브네트웍스 Software Engineer 지원 포트폴리오
 - 키워드 분류를 책임별 컴포넌트와 점수 기반 판정으로 개선했습니다.
 - Testcontainers와 실제 PostgreSQL을 사용하는 통합 테스트를 구성했습니다.
 - 근거: [상품 동기화 PR #1](https://github.com/ApptiveDev/Fin-API/pull/1), [분류 개선 PR #3](https://github.com/ApptiveDev/Fin-API/pull/3)
+
+### LLM 정규화 안정화
+
+- 비정형 우대조건을 Gemini로 구조화하는 과정에서 일부 요청이 약 60초 뒤 timeout되거나 응답 형식 때문에 파싱에 실패하는 문제를 호출별 시간·성공 여부 로그로 재현했습니다.
+- 로컬 FSS 원본 97건에 출력 토큰 상한과 temperature 조합을 반복 적용했습니다. 기준 설정의 전체 실행 시간 5분 30초를 선택 설정에서 2분 52초~3분 23초로 줄였고, 6회 실행에서 기존 장시간 timeout이 다시 발생하지 않았습니다.
+- 포괄 조건과 세부 조건, 구간별 차등 우대금리를 구분하도록 프롬프트를 7차례 수정한 뒤 같은 97건 회귀 데이터에서 parsing failure 0건을 확인했습니다. 이 결과는 조정에 사용한 데이터의 회귀 검증 결과이며 운영 전체 성능으로 일반화하지 않습니다.
+- 근거: [LLM 정규화 안정화 PR #40](https://github.com/PNU-2026-AI-Hackathon/pnuai-c-07-finfin2/pull/40), [97건 검토 자료](https://github.com/user-attachments/files/32417255/fss_normalization_v7_review.xlsx)
 
 ---
 
