@@ -3,8 +3,8 @@
 # 최유렬 | Software Engineer Portfolio
 
 [![GitHub](https://img.shields.io/badge/GitHub-yuyeol3-181717?logo=github)](https://github.com/yuyeol3)
-[![Java](https://img.shields.io/badge/Java-Spring%20Boot-6DB33F?logo=springboot&logoColor=white)](#기술-스택)
-[![TypeScript](https://img.shields.io/badge/TypeScript-NestJS-3178C6?logo=typescript&logoColor=white)](#기술-스택)
+[![Java](https://img.shields.io/badge/Java-Spring%20Boot-6DB33F?logo=springboot&logoColor=white)](#기술-경험)
+[![TypeScript](https://img.shields.io/badge/TypeScript-NestJS-3178C6?logo=typescript&logoColor=white)](#기술-경험)
 
 CJ올리브네트웍스 Software Engineer 지원 포트폴리오
 
@@ -72,8 +72,8 @@ CJ올리브네트웍스 Software Engineer 지원 포트폴리오
 ### LLM 정규화 안정화
 
 - 비정형 우대조건을 Gemini로 구조화하는 과정에서 일부 요청이 약 60초 뒤 timeout됐습니다. 응답 형식 때문에 파싱에 실패하는 문제도 호출별 소요 시간과 성공 여부 로그로 재현했습니다.
-- 로컬 FSS 원본 97건에 출력 토큰 상한과 temperature 조합을 반복 적용했습니다. 기준 설정의 전체 실행 시간은 5분 30초였습니다. 선택한 설정에서는 2분 52초에서 3분 23초가 걸렸습니다. 6회 실행 중 기존의 장시간 timeout은 다시 발생하지 않았습니다.
-- 포괄 조건과 세부 조건을 구분하고 구간별 차등 우대금리도 따로 처리하도록 프롬프트를 7차례 수정했습니다. 같은 97건 회귀 데이터에서 parsing failure 0건을 확인했습니다. 
+- 로컬에 저장한 금융감독원(FSS) 원본 97건에 출력 토큰 상한과 temperature 조합을 반복 적용했습니다. 기준 설정의 전체 실행 시간은 5분 30초였습니다. 선택한 설정에서는 2분 52초에서 3분 23초가 걸렸습니다. 6회 실행 중 기존의 장시간 timeout은 다시 발생하지 않았습니다.
+- 포괄 조건과 세부 조건을 구분하고 구간별 차등 우대금리도 따로 처리하도록 프롬프트를 7차례 수정했습니다. 같은 97건 회귀 데이터에서 parsing failure 0건을 확인했습니다.
 - 근거: [LLM 정규화 안정화 PR #40](https://github.com/PNU-2026-AI-Hackathon/pnuai-c-07-finfin2/pull/40) / [97건 검토 자료](https://github.com/user-attachments/files/32417255/fss_normalization_v7_review.xlsx)
 
 ---
@@ -91,7 +91,7 @@ CJ올리브네트웍스 Software Engineer 지원 포트폴리오
 
 - 실행 설정과 조건부 컴포넌트로 하나의 코드베이스를 API와 Game 역할로 나눴습니다. 각 서버에는 필요한 기능만 활성화했습니다.
 - Redis Sorted Set에 서버별 방 개수를 기록했습니다. API 서버는 방이 가장 적은 Game 서버 중 응답 가능한 서버를 선택합니다.
-- Game 서버가 10초마다 heartbeat을 갱신합니다. 서버 키에는 30초 TTL을 적용해 갱신이 끊긴 서버를 선택 후보에서 제외했습니다.
+- Game 서버가 10초마다 heartbeat를 갱신합니다. 서버 키에는 30초 TTL을 적용해 갱신이 끊긴 서버를 선택 후보에서 제외했습니다.
 - 방과 Game 서버의 연결을 Redis에 저장해 이후 요청이 같은 서버로 전달되도록 했습니다.
 - 근거: [API와 Game 서버 분리 커밋](https://github.com/yuyeol3/yacht-backend/commit/eb6515c) / [GameServerRegistryService](https://github.com/yuyeol3/yacht-backend/blob/865dd4056a69ab2da8875b1a9194779c79333096/src/main/java/io/github/yuyeol3/yachtbackend/server/GameServerRegistryService.java)
 
