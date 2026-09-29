@@ -14,11 +14,11 @@ CJ올리브네트웍스 Software Engineer 지원 포트폴리오
 
 | 공고의 업무·우대사항 | 관련 경험 |
 | --- | --- |
-| S/W 설계 및 개발 | 세무 판정, 금융상품 추천, Kubernetes 정책 관리 시스템의 데이터 모델·API 구현 |
-| WEB 서비스 개발 및 운영 | 인증·인가, 트랜잭션, 외부 API 연동, 배포 및 실패 복구 흐름 구현 |
-| Java·Spring Boot | 룰 엔진, OAuth2/JWT 인증, 약관 버전 관리, 개인화 검색, Spring Batch 수집기 |
-| AWS·DBMS | EC2·ECR·RDS·EKS, PostgreSQL·MySQL, Flyway·Prisma, 잠금과 동시성 제어 |
-| LLM·생성형 AI 연동 | Y-FIN의 Gemini 정규화 파이프라인, 룰카드의 AI·결정론적 코드 책임 분리 |
+| S/W 설계 및 개발 | 금융상품 추천, 실시간 게임 서버, Kubernetes 정책 관리 시스템의 데이터 모델·API 구현 |
+| WEB 서비스 개발 및 운영 | 인증·인가, 트랜잭션, 외부 API 연동, 실시간 상태 동기화와 배포 흐름 구현 |
+| Java·Spring Boot | OAuth2/JWT 인증, 개인화 검색, Spring Batch 수집기, WebSocket 게임 서버 |
+| AWS·DBMS | EC2·RDS·ALB·EKS, PostgreSQL·MySQL, Flyway·Prisma, 잠금과 동시성 제어 |
+| LLM·생성형 AI 연동 | Y-FIN의 Gemini 정규화 파이프라인, 일정관리 에이전트의 RAG·MCP 연동 |
 | AI 협업 역량 | 생성 코드의 취약한 테스트를 폐기하고 평가 하네스의 품질·토큰 비용을 조정한 기록 |
 
 ## 프로젝트 요약
@@ -26,7 +26,7 @@ CJ올리브네트웍스 Software Engineer 지원 포트폴리오
 | 프로젝트 | 역할 | 핵심 기여 | 대표 검증 |
 | --- | --- | --- | --- |
 | [Y-FIN](#1-y-fin--청년-맞춤-금융상품-추천) | Backend / Data Pipeline | 인증·개인화 추천·금융 데이터 수집 및 LLM 정규화 | 금융상품 391건 정규화, FSS 97건 반복 실험 |
-| [룰카드](#2-룰카드--결정론적-필요경비-판정) | Backend | 규칙 엔진·영속화·API 계약·협업 및 배포 자동화 | 백엔드 단위 테스트 80개 통과 |
+| [Yacht Online](#2-yacht-online--실시간-멀티플레이-게임) | Backend / Game Server / EC2 | API·Game 서버 분리, Redis 기반 서버 선택, WebSocket 상태 동기화 | API·Game·Redis 통합 실행 후 Game 서버 2대 AWS 배포 |
 | [Kyverno Governance Platform](#3-kyverno-governance-platform) | Backend | 인증·RBAC와 정책 예외의 승인·적용·재시도·만료 흐름 | 77개 스위트·617개 테스트 통과 |
 
 ## AI 협업 방식
@@ -78,42 +78,36 @@ CJ올리브네트웍스 Software Engineer 지원 포트폴리오
 
 ---
 
-## 2. 룰카드 — 결정론적 필요경비 판정
+## 2. Yacht Online — 실시간 멀티플레이 게임
 
-> 카카오테크 캠퍼스 4기 · 6인 팀 프로젝트 · 진행 중
-> [팀 저장소](https://github.com/kakaotechcampus-4/ktc4-pusan-4) · [아키텍처](https://github.com/kakaotechcampus-4/ktc4-pusan-4/blob/develop/docs/architecture.md) · [프론트엔드 프로토타입](https://yuyeol3.github.io/tax-agent-prototype/)
+> 2026.02 ~ 2026.06 · 3인 팀 · Backend / Game Server / Redis / EC2 담당
+> [통합 저장소](https://github.com/yuyeol3/yacht-online) · [백엔드 저장소](https://github.com/yuyeol3/yacht-backend/tree/feat/seperate-game-api) · [시스템 구성도](https://github.com/yuyeol3/yacht-online/blob/main/docs/images/diagram.png)
 
-IT 프리랜서의 카드 거래가 필요경비인지 법적 근거와 함께 설명하는 서비스입니다. AI는 규칙 후보와 근거 초안을 만들고, 실제 판정은 버전 관리되는 룰 엔진이 담당합니다.
+![Yacht Online 시스템 구성도](https://raw.githubusercontent.com/yuyeol3/yacht-online/main/docs/images/diagram.png)
 
-### 규칙 엔진
+로컬에서 동작하던 Yacht Dice 게임을 최대 4명이 참여하는 실시간 웹 서비스로 확장하고 AWS에 배포했습니다. 하나의 Spring Boot 코드베이스를 REST API 서버와 WebSocket Game 서버 역할로 나누고, Game 서버를 2대로 구성했습니다.
 
-- 차단형 규칙과 속성 누적형 규칙을 6개 관문으로 구분했습니다.
-- 우선순위·구체성·ID에 따른 규칙 승자 결정 방식을 코드로 고정했습니다.
-- 잘못된 필드 타입, 근거 없는 확정 판정, 충돌하는 속성 선언을 로딩 시점에 차단했습니다.
-- 사용자 답변이 충돌하면 배치 전체가 아닌 해당 거래만 `확인 필요`로 전환했습니다.
-- 근거: [룰 엔진 PR #10](https://github.com/kakaotechcampus-4/ktc4-pusan-4/pull/10), [구조·영속화 개선 PR #9](https://github.com/kakaotechcampus-4/ktc4-pusan-4/pull/9)
+### API·Game 서버 분리와 서버 선택
 
-### 영속화와 동시성
+- 실행 설정과 조건부 컴포넌트로 하나의 코드베이스를 API·Game 역할로 나눠 각 서버에 필요한 기능만 활성화했습니다.
+- Redis Sorted Set에 서버별 방 개수를 기록하고, API 서버가 방이 가장 적은 살아 있는 Game 서버를 선택하도록 구현했습니다.
+- Game 서버가 10초마다 heartbeat을 갱신하고 서버 키에 30초 TTL을 적용해, 갱신이 끊긴 서버를 선택 후보에서 제외했습니다.
+- 방과 Game 서버의 연결을 Redis에 저장해 이후 요청이 같은 서버로 전달되도록 했습니다.
+- 근거: [API·Game 서버 분리 커밋](https://github.com/yuyeol3/yacht-backend/commit/eb6515c), [GameServerRegistryService](https://github.com/yuyeol3/yacht-backend/blob/865dd4056a69ab2da8875b1a9194779c79333096/src/main/java/io/github/yuyeol3/yachtbackend/server/GameServerRegistryService.java)
 
-- 룰·법령 버전을 판정 결과와 함께 저장해 결과의 재현 근거를 남겼습니다.
-- PostgreSQL 잠금으로 사용자별 버전·개정 번호 발급을 직렬화했습니다.
-- 판정 도중 발생한 개별 데이터 충돌이 전체 배치를 중단하지 않도록 실패 범위를 제한했습니다.
-- 근거: [판정 DB·영속화 PR #11](https://github.com/kakaotechcampus-4/ktc4-pusan-4/pull/11)
+### 실시간 게임 상태 동기화
 
-### API 계약과 개발 자동화
+- STOMP 메시징으로 방 단위 상태를 동기화하고, 주사위 굴리기·고정·점수 선택·턴 전환을 서버에서 검증한 뒤 참가자에게 브로드캐스트했습니다.
+- 최대 4명 참여와 3분 턴 제한을 서버 규칙으로 두고 게임 상태를 관리했습니다.
+- Redis를 서버 레지스트리와 방 배정에 사용하고, 게임 진행 상태는 Game 서버가 관리하도록 책임을 구분했습니다.
+- 근거: [GameRoomWebSocketController](https://github.com/yuyeol3/yacht-backend/blob/865dd4056a69ab2da8875b1a9194779c79333096/src/main/java/io/github/yuyeol3/yachtbackend/gameroom/GameRoomWebSocketController.java), [WebSocket 연결 종료 처리](https://github.com/yuyeol3/yacht-backend/blob/865dd4056a69ab2da8875b1a9194779c79333096/src/main/java/io/github/yuyeol3/yachtbackend/config/WebSocketEventListener.java)
 
-- 문서화된 API 계약을 실행 가능한 NestJS 목 서버로 구현했습니다.
-- 업로드 멱등성, 판정 실행, 되묻기, 수동 오버라이드 흐름을 테스트했습니다.
-- 정적 분석·테스트 결과를 PR에 요약하는 코드 품질 봇을 추가했습니다.
-- Discord PR 알림·리뷰 리마인드와 ECR·EC2 배포 흐름을 구성했습니다.
-- 근거: [목 서버 PR #41](https://github.com/kakaotechcampus-4/ktc4-pusan-4/pull/41), [코드 품질 봇 PR #37](https://github.com/kakaotechcampus-4/ktc4-pusan-4/pull/37), [리뷰 알림 PR #48](https://github.com/kakaotechcampus-4/ktc4-pusan-4/pull/48), [AWS 배포 PR #58](https://github.com/kakaotechcampus-4/ktc4-pusan-4/pull/58)
+### 클라우드 배포
 
-### 실행 검증
-
-- 현재 `develop` 기준 백엔드 단위 테스트 **80개 통과**를 직접 확인했습니다.
-- 별도 프론트엔드 프로토타입은 테스트 6개, lint, production build가 통과합니다.
-- 상호명 184만 개를 이용한 분류 실험에서 규칙+모델 조합을 평가하고, 정확도뿐 아니라 공개 데이터에 없는 카테고리와 도메인 시프트 한계를 기록했습니다.
-- 근거: [상호명 분류 실험](https://github.com/yuyeol3/merchant-category-classifier), [평가 보고서](https://github.com/yuyeol3/merchant-category-classifier/blob/main/REPORT.md)
+- Docker Compose로 API 서버·Game 서버·Redis의 통합 실행을 확인한 뒤 EC2에 배포하고 RDS·ALB와 연동했습니다.
+- 본인은 백엔드 구조 개선, Game 서버 2대, Redis, EC2 배포를 담당했습니다. RDS 구성과 S3·ACM·DNS·ALB 생성은 팀원이 담당했습니다.
+- 이 경험의 범위는 클라우드 환경 구축과 배포이며 장기 운영·모니터링 경험으로 확대해 표현하지 않습니다.
+- 근거: [통합 저장소 README](https://github.com/yuyeol3/yacht-online#readme), [백엔드 실행·배포 구성](https://github.com/yuyeol3/yacht-backend/tree/feat/seperate-game-api)
 
 ---
 
@@ -157,7 +151,7 @@ Kubernetes 정책 위반을 조회하고, 한시적 예외의 요청·승인·�
 | Backend | Java, Spring Boot, Spring Security, Spring Batch, NestJS, REST API, WebSocket |
 | Data | PostgreSQL, MySQL, Redis, JPA, Prisma, Flyway, 트랜잭션·잠금 |
 | Test | JUnit, Jest, Supertest, Testcontainers, 계약·통합·동시성 테스트 |
-| Infra | AWS EC2·ECR·RDS·EKS, Docker Compose, GitHub Actions, Kubernetes, Kyverno |
+| Infra | AWS EC2·RDS·ALB·EKS, Docker Compose, GitHub Actions, Kubernetes, Kyverno |
 | Frontend | TypeScript, React, Next.js, Vite |
 | AI / Data | 구조화 출력 검증, RAG, scikit-learn, char n-gram 분류 |
 
@@ -167,6 +161,6 @@ Kubernetes 정책 위반을 조회하고, 한시적 예외의 요청·승인·�
 | --- | --- | --- |
 | [Plato Calendar](https://github.com/yuyeol3/plato-calendar3) | 부산대학교 LMS 일정을 수집·동기화하는 Chrome Extension | production build 확인 |
 | [YouTube Shortener](https://github.com/yuyeol3/youtube-shortener-backend) | 시청 heatmap 기반 인기 구간 탐색·자동 스킵 웹 서비스 | Spring Boot + React 풀스택 |
-| [Yacht Online](https://github.com/yuyeol3/yacht-online) | WebSocket 멀티플레이 게임, API/Game 서버 분리와 AWS 배포 | Spring Boot + Redis + AWS |
+| [Kanana Schedule Agent](https://github.com/kakaotechcampus-4/pusan-clone/tree/choiyuyeol/final) | 도구 선택에서 RAG·MCP·하위 에이전트 위임까지 6주간 구현 | Python + RAG + MCP |
 | [개발 블로그](https://yuyeol3.github.io/) | Next.js App Router와 GitHub Actions 기반 정적 블로그 | GitHub Pages 운영 |
 | [Codex 개발 도구](https://github.com/yuyeol3/maintain-code-map) | 코드맵, TDD, 변경 설명 등 반복 개발 작업을 구조화한 도구 | [관련 저장소](https://github.com/yuyeol3?tab=repositories) |
