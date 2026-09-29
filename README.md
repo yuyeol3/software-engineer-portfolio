@@ -39,7 +39,7 @@ CJ올리브네트웍스 Software Engineer 지원 포트폴리오
 
 ## 1. Y-FIN: 청년 맞춤 금융상품 추천
 
-> 2026.03 ~ 진행 중 / 5인 팀(백엔드 2인) / PNU 2026 AI 해커톤 최우수상\
+> 2026.03 \~ 진행 중 / 5인 팀(백엔드 2인) / PNU 2026 AI 해커톤 최우수상\
 > 담당: 인증과 인가, 금융 데이터 수집기 신규 구축, 추천 로직 리팩터링\
 > 기술: Java 21, Spring Boot 4, Spring Security, Spring Batch, JPA, PostgreSQL, Testcontainers, Gemini API\
 > [서비스 백엔드](https://github.com/ApptiveDev/Fin-BE) / [금융 데이터 수집기](https://github.com/ApptiveDev/Fin-API) / [해커톤 저장소](https://github.com/PNU-2026-AI-Hackathon/pnuai-c-07-finfin2)
@@ -55,7 +55,7 @@ CJ올리브네트웍스 Software Engineer 지원 포트폴리오
 ![Y-FIN LLM 보강 정규화 흐름](https://raw.githubusercontent.com/PNU-2026-AI-Hackathon/pnuai-c-07-finfin2/main/docs/img/llm-normalization.png)
 
 **3. LLM 장시간 timeout과 파싱 실패**\
-일부 요청이 약 60초 뒤 timeout되고, 응답 형식 때문에 파싱이 실패했습니다. 호출별 소요 시간 로그로 재현한 뒤 금융감독원(FSS) 원본 97건으로 출력 토큰 상한과 temperature 조합을 실험해, 전체 실행 시간을 5분 30초에서 2분 52초~3분 23초로 줄였습니다(약 38~48%). 6회 실행 중 장시간 timeout은 재발하지 않았습니다. 프롬프트를 7차례 고친 뒤 같은 97건에서 파싱 실패 0건을 확인했고, 조정에 쓴 데이터라 새 데이터에서의 일반화는 아직 확인하지 않았습니다. [PR #40](https://github.com/PNU-2026-AI-Hackathon/pnuai-c-07-finfin2/pull/40) / [97건 검토 자료](https://github.com/user-attachments/files/32417255/fss_normalization_v7_review.xlsx)
+일부 요청이 약 60초 뒤 timeout되고, 응답 형식 때문에 파싱이 실패했습니다. 호출별 소요 시간 로그로 재현한 뒤 금융감독원(FSS) 원본 97건으로 출력 토큰 상한과 temperature 조합을 실험해, 전체 실행 시간을 5분 30초에서 2분 52초\~3분 23초로 줄였습니다(약 38\~48%). 6회 실행 중 장시간 timeout은 재발하지 않았습니다. 프롬프트를 7차례 고친 뒤 같은 97건에서 파싱 실패 0건을 확인했고, 조정에 쓴 데이터라 새 데이터에서의 일반화는 아직 확인하지 않았습니다. [PR #40](https://github.com/PNU-2026-AI-Hackathon/pnuai-c-07-finfin2/pull/40) / [97건 검토 자료](https://github.com/user-attachments/files/32417255/fss_normalization_v7_review.xlsx)
 
 <details>
 <summary>그 외 구현</summary>
@@ -76,7 +76,7 @@ CJ올리브네트웍스 Software Engineer 지원 포트폴리오
 
 ## 2. Yacht Online: 실시간 멀티플레이 게임
 
-> 2026.02 ~ 2026.06 / 3인 팀\
+> 2026.02 \~ 2026.06 / 3인 팀\
 > 담당: Backend, Game Server, Redis, EC2 배포\
 > 기술: Java, Spring Boot, WebSocket(STOMP), Redis, Docker Compose, AWS EC2, RDS, ALB\
 > [통합 저장소](https://github.com/yuyeol3/yacht-online) / [백엔드 저장소](https://github.com/yuyeol3/yacht-backend)
@@ -140,7 +140,7 @@ Kubernetes 정책 위반을 조회하고, 한시적 정책 예외의 신청, 승
 
 ## 4. 일정관리 AI 에이전트: 카카오테크캠퍼스 4기
 
-> 2026.06 ~ 2026.08 / 에이전틱 AI 과정 / 개인 구현 / 6주 과제 PR 전부 병합\
+> 2026.06 \~ 2026.08 / 에이전틱 AI 과정 / 개인 구현 / 6주 과제 PR 전부 병합\
 > 기술: Python 3.11, LangChain, OpenAI API, ChromaDB, SQLite, MCP, pytest\
 > [저장소(choiyuyeol/final)](https://github.com/kakaotechcampus-4/pusan-clone/tree/choiyuyeol/final) / [4주차 PR #125](https://github.com/kakaotechcampus-4/pusan-clone/pull/125) / [5주차 PR #158](https://github.com/kakaotechcampus-4/pusan-clone/pull/158) / [6주차 PR #195](https://github.com/kakaotechcampus-4/pusan-clone/pull/195)
 
