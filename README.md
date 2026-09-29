@@ -73,7 +73,7 @@ CJ올리브네트웍스 Software Engineer 지원 포트폴리오
 
 - 비정형 우대조건을 Gemini로 구조화하는 과정에서 일부 요청이 약 60초 뒤 timeout됐습니다. 응답 형식 때문에 파싱에 실패하는 문제도 호출별 소요 시간과 성공 여부 로그로 재현했습니다.
 - 로컬 FSS 원본 97건에 출력 토큰 상한과 temperature 조합을 반복 적용했습니다. 기준 설정의 전체 실행 시간은 5분 30초였습니다. 선택한 설정에서는 2분 52초에서 3분 23초가 걸렸습니다. 6회 실행 중 기존의 장시간 timeout은 다시 발생하지 않았습니다.
-- 포괄 조건과 세부 조건을 구분하고 구간별 차등 우대금리도 따로 처리하도록 프롬프트를 7차례 수정했습니다. 같은 97건 회귀 데이터에서 parsing failure 0건을 확인했습니다. 이 결과는 조정에 사용한 데이터의 회귀 검증 결과이며 운영 전체 성능을 뜻하지 않습니다.
+- 포괄 조건과 세부 조건을 구분하고 구간별 차등 우대금리도 따로 처리하도록 프롬프트를 7차례 수정했습니다. 같은 97건 회귀 데이터에서 parsing failure 0건을 확인했습니다. 
 - 근거: [LLM 정규화 안정화 PR #40](https://github.com/PNU-2026-AI-Hackathon/pnuai-c-07-finfin2/pull/40) / [97건 검토 자료](https://github.com/user-attachments/files/32417255/fss_normalization_v7_review.xlsx)
 
 ---
@@ -106,7 +106,6 @@ CJ올리브네트웍스 Software Engineer 지원 포트폴리오
 
 - Docker Compose에서 API 서버와 Game 서버가 Redis를 통해 함께 동작하는지 확인했습니다. 이후 EC2에 배포하고 RDS와 ALB를 연동했습니다.
 - 본인은 백엔드 구조 개선과 Game 서버 2대 구성 그리고 Redis와 EC2 배포를 담당했습니다. 다른 팀원은 RDS와 S3 정적 호스팅을 맡았습니다. ACM 인증서와 DNS 및 ALB 구성도 해당 팀원이 담당했습니다.
-- 이 경험의 범위는 클라우드 환경 구축과 배포입니다. 장기 운영이나 모니터링 경험으로 확대해 표현하지 않습니다.
 - 근거: [통합 저장소 README](https://github.com/yuyeol3/yacht-online#readme) / [백엔드 실행과 배포 구성](https://github.com/yuyeol3/yacht-backend/tree/feat/seperate-game-api)
 
 ---
