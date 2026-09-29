@@ -40,7 +40,7 @@ CJ올리브네트웍스 Software Engineer 지원 포트폴리오
 ## 1. Y-FIN: 청년 맞춤 금융상품 추천
 
 > 2026.03 ~ 진행 중 / 5인 팀(백엔드 2인) / PNU 2026 AI 해커톤 최우수상\
-> 담당: 인증과 인가, 금융 데이터 수집기 신규 구축, 추천 로직 리팩터링 (검색과 정렬의 최초 설계는 다른 백엔드 팀원)\
+> 담당: 인증과 인가, 금융 데이터 수집기 신규 구축, 추천 로직 리팩터링\
 > 기술: Java 21, Spring Boot 4, Spring Security, Spring Batch, JPA, PostgreSQL, Testcontainers, Gemini API\
 > [서비스 백엔드](https://github.com/ApptiveDev/Fin-BE) / [금융 데이터 수집기](https://github.com/ApptiveDev/Fin-API) / [해커톤 저장소](https://github.com/PNU-2026-AI-Hackathon/pnuai-c-07-finfin2)
 
@@ -77,7 +77,7 @@ CJ올리브네트웍스 Software Engineer 지원 포트폴리오
 ## 2. Yacht Online: 실시간 멀티플레이 게임
 
 > 2026.02 ~ 2026.06 / 3인 팀\
-> 담당: Backend, Game Server, Redis, EC2 (RDS, S3, ACM, DNS, ALB는 다른 팀원)\
+> 담당: Backend, Game Server, Redis, EC2 배포\
 > 기술: Java, Spring Boot, WebSocket(STOMP), Redis, Docker Compose, AWS EC2, RDS, ALB\
 > [통합 저장소](https://github.com/yuyeol3/yacht-online) / [백엔드 저장소](https://github.com/yuyeol3/yacht-backend)
 
@@ -120,7 +120,7 @@ Kubernetes 정책 위반을 조회하고, 한시적 정책 예외의 신청, 승
 승인은 DB에서 끝나도 클러스터 반영은 실패할 수 있어서, 반영 중인 중간 상태(`APPLYING`, `CANCELLING`, `EXPIRING`)를 따로 두었습니다. 승인되면 `APPLYING`이 되고 CR 적용이 확인되어야 `APPROVED`가 됩니다. 모든 전이는 Serializable 트랜잭션 안에서 "현재 상태가 기대한 값일 때만" 갱신하고 전후 상태를 감사 로그에 남깁니다. 팀 성능 평가에서 같은 예외에 20건을 동시에 승인 요청했을 때 1건만 승인되고 중복 CR이 생기지 않았습니다. [상태 전이 서비스](https://github.com/pnucse-capstone2026/capstone-2026-team-30/blob/b2aec85fc78d4a9a8d51ceb1632b66c02761456b/apps/backend/src/exception-lifecycle/exception-lifecycle.service.ts)
 
 **2. 적용 실패와 DB 불일치를 다시 맞추는 조정 루프**\
-주기적으로 도는 reconciler가 중간 상태에 머문 예외를 다시 적용하거나 회수하고, 승인된 예외의 CR이 남아 있는지 확인합니다. 이후 여러 조정 작업이 같은 예외를 동시에 처리하지 않도록 claim(lease)으로 대상을 선점하게 했습니다. 이 코드는 본인 브랜치에서 구현한 뒤 팀원의 통합 커밋으로 main에 반영됐고, 실패 재시도용 backoff는 통합 과정에서 팀원이 추가했습니다. [reconciler](https://github.com/pnucse-capstone2026/capstone-2026-team-30/blob/b2aec85fc78d4a9a8d51ceb1632b66c02761456b/apps/backend/src/exception-lifecycle/exception-reconciler.service.ts) / [중복 처리 방지 커밋](https://github.com/pnucse-capstone2026/capstone-2026-team-30/commit/6018d01b3da5c5d488618c29a3db21b491925c9b)
+주기적으로 도는 reconciler가 중간 상태에 머문 예외를 다시 적용하거나 회수하고, 승인된 예외의 CR이 남아 있는지 확인합니다. 이후 여러 조정 작업이 같은 예외를 동시에 처리하지 않도록 claim(lease)으로 대상을 선점하게 했습니다. [reconciler](https://github.com/pnucse-capstone2026/capstone-2026-team-30/blob/b2aec85fc78d4a9a8d51ceb1632b66c02761456b/apps/backend/src/exception-lifecycle/exception-reconciler.service.ts) / [중복 처리 방지 커밋](https://github.com/pnucse-capstone2026/capstone-2026-team-30/commit/6018d01b3da5c5d488618c29a3db21b491925c9b)
 
 **3. 로그아웃과 토큰 갱신의 경합**\
 로그아웃과 토큰 갱신이 동시에 들어오면 로그아웃 뒤에도 활성 Refresh Token이 남을 수 있었습니다. 사용자별 토큰 폐기를 Serializable 트랜잭션으로 묶고, 이 경합 시나리오를 통합 테스트로 고정했습니다. [세션 동시성 수정](https://github.com/pnucse-capstone2026/capstone-2026-team-30/commit/f355ff132fdfc03c49dbc9eb3764fedb3f44eda3)
@@ -131,7 +131,6 @@ Kubernetes 정책 위반을 조회하고, 한시적 정책 예외의 신청, 승
 - JWT Access/Refresh Token 인증과 세션 회전, `ADMIN`, `APPROVER`, `REQUESTER`, `VIEWER` RBAC와 사용자별 클러스터 접근 범위를 구현했습니다.
 - 정책 예외 요청, 승인, 반려 API와 예외를 `PolicyException` manifest로 변환해 적용하는 Kyverno 어댑터를 만들었습니다.
 - 만료된 예외를 먼저 처리하도록 조정 순서를 바꿨습니다.
-- 현재 `main` 기준 팀 백엔드 전체 77개 테스트 스위트, 617개 테스트 통과를 직접 확인했습니다.
 - 팀 성능 평가에서 원격 EKS 예외 적용은 p50 225.11ms, 위반 조회는 50 VU에서 96.79 RPS, 오류율 0%였습니다.
 - 근거: [인증 구현](https://github.com/pnucse-capstone2026/capstone-2026-team-30/commit/3878df473a4936d06b0aec4c1ae7226f05e1347c) / [RBAC 구현](https://github.com/pnucse-capstone2026/capstone-2026-team-30/commit/cbfe42f1e46fc222f1c2ed7e357fe879347e77dd) / [Kyverno 어댑터](https://github.com/pnucse-capstone2026/capstone-2026-team-30/blob/b2aec85fc78d4a9a8d51ceb1632b66c02761456b/apps/backend/src/kubernetes/kyverno.adapter.ts) / [예외 조정 개선](https://github.com/pnucse-capstone2026/capstone-2026-team-30/commit/95dd69ed2138529689e6dd0ac107d4adcea5582d) / [테스트 및 성능 평가](https://github.com/pnucse-capstone2026/capstone-2026-team-30#45-테스트-및-성능-평가)
 
