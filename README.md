@@ -9,7 +9,7 @@ CJ올리브네트웍스 Software Engineer 지원 포트폴리오
 
 - 부산대학교 정보컴퓨터공학 2027.02 졸업예정 (학점 4.36/4.5, 전공 4.42/4.5)
 - zerom50@gmail.com
-- 수상: PNU 2026 AI 해커톤 최우수상(2026.08), 카카오테크캠퍼스 4기 아이디어톤 우수상(2026.07), 제4회 PNU Coding Challenge 장려상(2024.11)
+- 수상: 제7회 PNU 창의융합AI해커톤 최우수상(2026.08), 카카오테크캠퍼스 4기 아이디어톤 우수상(2026.07), 제4회 PNU Coding Challenge 장려상(2024.11)
 - 자격: 정보처리기사(2026.09), OPIc IH
 
 불편한 것을 코드로 빠르게 해결하는 재미로 코딩을 시작했습니다. 지금은 전공에서 학습한 데이터베이스, 운영체제 개념 등을 많이 활용해볼 수 있는 Java와 Spring 백엔드를 중심으로 개발하고 있습니다. 최근에는 AI로 개발하며 코드 검증과 이해에 관심이 있습니다.
@@ -38,7 +38,7 @@ CJ올리브네트웍스 Software Engineer 지원 포트폴리오
 
 ## 1. Y-FIN: 청년 맞춤 금융상품 추천
 
-> 2026.03 \~ 진행 중 / 5인 팀(백엔드 2인) / PNU 2026 AI 해커톤 최우수상\
+> 2026.03 \~ 진행 중 / 5인 팀(백엔드 2인) / 제7회 PNU 창의융합AI해커톤 최우수상\
 > 담당: 인증과 인가, 금융 데이터 수집기 신규 구축, 추천 로직 리팩터링\
 > 기술: Java 21, Spring Boot 4, Spring Security, Spring Batch, JPA, PostgreSQL, Testcontainers, Gemini API\
 > [서비스 백엔드](https://github.com/ApptiveDev/Fin-BE) / [금융 데이터 수집기](https://github.com/ApptiveDev/Fin-API) / [해커톤 저장소](https://github.com/PNU-2026-AI-Hackathon/pnuai-c-07-finfin2)
