@@ -5,8 +5,6 @@
 [![GitHub](https://img.shields.io/badge/GitHub-yuyeol3-181717?logo=github)](https://github.com/yuyeol3)
 [![Java](https://img.shields.io/badge/Java-Spring%20Boot-6DB33F?logo=springboot&logoColor=white)](#기술-경험)
 
-CJ올리브네트웍스 Software Engineer 지원 포트폴리오
-
 - 부산대학교 정보컴퓨터공학 2027.02 졸업예정 (학점 4.36/4.5, 전공 4.42/4.5)
 - zerom50@gmail.com
 - 수상: 제7회 PNU 창의융합AI해커톤 최우수상(2026.08), 카카오테크캠퍼스 4기 아이디어톤 우수상(2026.07), 제4회 PNU Coding Challenge 장려상(2024.11)
@@ -16,7 +14,7 @@ CJ올리브네트웍스 Software Engineer 지원 포트폴리오
 
 ## 직무 연관 경험
 
-| 공고의 업무 및 우대사항 | 관련 경험 |
+| 업무 영역 | 관련 경험 |
 | --- | --- |
 | S/W 설계 및 개발 | 금융상품 추천, 실시간 게임 서버, Kubernetes 정책 관리 시스템의 데이터 모델과 API 구현 |
 | WEB 서비스 개발 및 운영 | 인증과 인가, 트랜잭션, 외부 API 연동, 실시간 상태 동기화, 배포 |
